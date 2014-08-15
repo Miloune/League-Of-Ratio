@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="400.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="leagueofratio.application.controller.HomeController">
+    <stylesheets>
+        <URL value="@Home.css" />
+    </stylesheets>
+    <children>
+        <MenuBar prefWidth="850.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="Game">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#addGame" text="Add Game" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <PieChart fx:id="pieChart" layoutX="14.0" layoutY="40.0" prefHeight="200.0" prefWidth="200.0" />
+        <Label fx:id="caption" visible="false" />
+        <ChoiceBox fx:id="choiceRank" layoutX="14.0" layoutY="279.0" prefWidth="200.0" />
+        <ChoiceBox fx:id="choiceDivision" layoutX="14.0" layoutY="314.0" prefWidth="200.0" visible="false" />
+        <Button fx:id="applyFilter" layoutX="14.0" layoutY="348.0" mnemonicParsing="false" onAction="#applyFilter" prefWidth="200.0" text="Apply filter" />
+        <TableView fx:id="tableView" layoutX="228.0" layoutY="29.0" prefHeight="200.0" prefWidth="626.0">
+            <columns>
+                <TableColumn fx:id="tableChampion" prefWidth="84.0" text="Champion" />
+                <TableColumn fx:id="tableResult" prefWidth="60.0" text="Result" />
+                <TableColumn fx:id="tableKill" prefWidth="50.0" text="Kill" />
+                <TableColumn fx:id="tableDeath" prefWidth="58.0" text="Death" />
+                <TableColumn fx:id="tableAssist" prefWidth="61.0" text="Assist" />
+                <TableColumn fx:id="tableKda" prefWidth="62.0" text="Kda" />
+                <TableColumn fx:id="tableElo" prefWidth="69.0" text="Elo" />
+                <TableColumn fx:id="tableRanked" prefWidth="107.0" text="Ranked" />
+                <TableColumn fx:id="tableDivision" prefWidth="74.0" text="Division" />
+            </columns>
+        </TableView>
+    </children>
+</AnchorPane>
