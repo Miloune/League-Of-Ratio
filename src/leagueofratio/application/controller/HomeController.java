@@ -35,6 +35,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import leagueofratio.application.object.FilterComboBox;
 import leagueofratio.application.object.NumberField;
@@ -89,6 +90,8 @@ public class HomeController implements Initializable {
     @FXML
     private TableColumn<Game, Division> tableDivision;
 
+    @FXML
+    private Pane paneData;
     @FXML
     private Label averageKdaSelected;
     @FXML
@@ -511,54 +514,59 @@ public class HomeController implements Initializable {
 
         }
 
-        for (Game game : gameSelected) {
-            gameSelectedKill = gameSelectedKill + game.getKill();
-            gameSelectedDeath = gameSelectedDeath + game.getDeath();
-            gameSelectedAssist = gameSelectedAssist + game.getAssist();
-
-            if (game.getResult() == Result.Victory) {
-                gameSelectedVictory = gameSelectedVictory + 1;
-            } else {
-                gameSelectedDefeat = gameSelectedDefeat + 1;
-            }
-        }
-
-        if (gameSelectedDeath != 0) {
-            gameSelectedKda = (gameSelectedKill + gameSelectedAssist) / gameSelectedDeath;
-            averageKdaSelected.setText(String.valueOf(gameSelectedKda));
+        if (gameSelected.size() == 0) {
+            paneData.setVisible(false);
         } else {
-            averageKdaSelected.setText("Infinite");
+            paneData.setVisible(true);
+            for (Game game : gameSelected) {
+                gameSelectedKill = gameSelectedKill + game.getKill();
+                gameSelectedDeath = gameSelectedDeath + game.getDeath();
+                gameSelectedAssist = gameSelectedAssist + game.getAssist();
+
+                if (game.getResult() == Result.Victory) {
+                    gameSelectedVictory = gameSelectedVictory + 1;
+                } else {
+                    gameSelectedDefeat = gameSelectedDefeat + 1;
+                }
+            }
+
+            if (gameSelectedDeath != 0) {
+                gameSelectedKda = (gameSelectedKill + gameSelectedAssist) / gameSelectedDeath;
+                averageKdaSelected.setText(String.valueOf(gameSelectedKda));
+            } else {
+                averageKdaSelected.setText("Infinite");
+            }
+
+            // Set PIECHART Data
+            ObservableList<PieChart.Data> pieChartData
+                    = FXCollections.observableArrayList(
+                            new PieChart.Data("Victory", gameSelectedVictory),
+                            new PieChart.Data("Defeat", gameSelectedDefeat));
+            pieChartSelected.setTitle(gameSelectedVictory + " Win(s) / " + gameSelectedDefeat + " Loose(s)");
+            pieChartSelected.setData(pieChartData);
+            pieChartSelected.setLabelLineLength(2);
+            pieChartSelected.setLegendSide(Side.LEFT);
+
+            applyCustomColorSequence(
+                    pieChartData,
+                    "green",
+                    "red"
+            );
+
+            // Set BARCHART Data
+            barChartSelected.setTitle("K.D.A");
+
+            barChartSelected.getData().clear();
+
+            XYChart.Series series1 = new XYChart.Series();
+            XYChart.Series series2 = new XYChart.Series();
+            XYChart.Series series3 = new XYChart.Series();
+
+            series1.getData().add(new XYChart.Data("Kill", gameSelectedKill));
+            series2.getData().add(new XYChart.Data("Death", gameSelectedDeath));
+            series3.getData().add(new XYChart.Data("Assist", gameSelectedAssist));
+
+            barChartSelected.getData().addAll(series1, series2, series3);
         }
-
-        // Set PIECHART Data
-        ObservableList<PieChart.Data> pieChartData
-                = FXCollections.observableArrayList(
-                        new PieChart.Data("Victory", gameSelectedVictory),
-                        new PieChart.Data("Defeat", gameSelectedDefeat));
-        pieChartSelected.setTitle(gameSelectedVictory + " Win(s) / " + gameSelectedDefeat + " Loose(s)");
-        pieChartSelected.setData(pieChartData);
-        pieChartSelected.setLabelLineLength(2);
-        pieChartSelected.setLegendSide(Side.LEFT);
-
-        applyCustomColorSequence(
-                pieChartData,
-                "green",
-                "red"
-        );
-
-        // Set BARCHART Data
-        barChartSelected.setTitle("K.D.A");
-
-        barChartSelected.getData().clear();
-
-        XYChart.Series series1 = new XYChart.Series();
-        XYChart.Series series2 = new XYChart.Series();
-        XYChart.Series series3 = new XYChart.Series();
-
-        series1.getData().add(new XYChart.Data("Kill", gameSelectedKill));
-        series2.getData().add(new XYChart.Data("Death", gameSelectedDeath));
-        series3.getData().add(new XYChart.Data("Assist", gameSelectedAssist));
-
-        barChartSelected.getData().addAll(series1, series2, series3);
     }
 }
