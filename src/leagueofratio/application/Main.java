@@ -6,6 +6,7 @@
 
 package leagueofratio.application;
 
+import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import leagueofratio.object.Game;
 
 /**
  *
@@ -73,6 +75,11 @@ public class Main extends Application {
     }
     
     public static void main(String[] args) {
+        File gameDir = new File(Game.getPath());
+        
+        if(!gameDir.exists()) {
+            gameDir.mkdirs();
+        }
         launch(args);
     }
     
