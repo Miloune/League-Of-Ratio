@@ -1,4 +1,4 @@
-package leagueofratio.application;
+package leagueofratio.application.object;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;

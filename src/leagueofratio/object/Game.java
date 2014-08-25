@@ -22,7 +22,7 @@ import java.util.Date;
  */
 public class Game implements Serializable {
 
-    static String path = "savedGames/";
+    private static final String path = "savedGames/";
     
     private final Result result;
     private final double kill;
@@ -138,5 +138,9 @@ public class Game implements Serializable {
         }
         
         return gamesList;
+    }
+    
+    public static String getPath() {
+        return Game.path;
     }
 }

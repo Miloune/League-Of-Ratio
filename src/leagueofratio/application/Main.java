@@ -30,7 +30,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("League Of Ratio");
-
+        
+        initGameDir();
         initRootLayout();
 
         showHomeOverview();
@@ -43,7 +44,7 @@ public class Main extends Application {
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("RootLayout.fxml"));
+            loader.setLocation(getClass().getResource("graphic/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
 
             // Show the scene containing the root layout.
@@ -64,7 +65,7 @@ public class Main extends Application {
         try {
             // Load login overview.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("Home.fxml"));
+            loader.setLocation(getClass().getResource("graphic/Home.fxml"));
             AnchorPane homeOverview = (AnchorPane) loader.load();
 
             // Set login overview into the center of root layout.
@@ -74,12 +75,15 @@ public class Main extends Application {
         }
     }
     
-    public static void main(String[] args) {
+    private void initGameDir() {
         File gameDir = new File(Game.getPath());
         
         if(!gameDir.exists()) {
             gameDir.mkdirs();
         }
+    }
+    
+    public static void main(String[] args) {
         launch(args);
     }
     

@@ -16,23 +16,28 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import leagueofratio.application.FilterComboBox;
-import leagueofratio.application.NumberField;
+import leagueofratio.application.object.FilterComboBox;
+import leagueofratio.application.object.NumberField;
 import leagueofratio.object.Champion;
 import leagueofratio.object.Division;
 import leagueofratio.object.Game;
@@ -84,6 +89,13 @@ public class HomeController implements Initializable {
     @FXML
     private TableColumn<Game, Division> tableDivision;
 
+    @FXML
+    private Label averageKdaSelected;
+    @FXML
+    private PieChart pieChartSelected;
+    @FXML
+    private BarChart barChartSelected;
+
     private ArrayList<Game> allGames;
     private final ArrayList<Game> allGamesFiltered = new ArrayList<>();
     private FilterComboBox choiceChampion;
@@ -101,7 +113,7 @@ public class HomeController implements Initializable {
         initializeChoiceRank();
         initializeChoiceDivision();
         initializeTableView();
-        
+
         refreshData();
     }
 
@@ -123,6 +135,7 @@ public class HomeController implements Initializable {
     }
 
     private void initializeTableView() {
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         tableChampion.setCellValueFactory(new PropertyValueFactory<>("champion"));
         tableResult.setCellValueFactory(new PropertyValueFactory<>("result"));
         tableKill.setCellValueFactory(new PropertyValueFactory<>("kill"));
@@ -132,6 +145,16 @@ public class HomeController implements Initializable {
         tableElo.setCellValueFactory(new PropertyValueFactory<>("elo"));
         tableRanked.setCellValueFactory(new PropertyValueFactory<>("rank"));
         tableDivision.setCellValueFactory(new PropertyValueFactory<>("division"));
+
+        tableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    filterSelectedItem();
+                }
+            }
+        });
     }
 
     private void initializeAllGames() {
@@ -348,7 +371,7 @@ public class HomeController implements Initializable {
                                 numberDef = numberDef + 1;
                                 allGamesFiltered.add(game);
                             }
-                            
+
                         }
                         setPieChartWinLoose(numberWin, numberDef, numberWin + " Win / " + numberDef + " Loose");
                     } else {
@@ -362,7 +385,7 @@ public class HomeController implements Initializable {
                                 numberDef = numberDef + 1;
                                 allGamesFiltered.add(game);
                             }
-                            
+
                         }
                         setPieChartWinLoose(numberWin, numberDef, numberWin + " Win / " + numberDef + " Loose");
                     }
@@ -377,7 +400,7 @@ public class HomeController implements Initializable {
                             numberDef = numberDef + 1;
                             allGamesFiltered.add(game);
                         }
-                        
+
                     }
                     setPieChartWinLoose(numberWin, numberDef, numberWin + " Win / " + numberDef + " Loose");
                 }
@@ -392,7 +415,7 @@ public class HomeController implements Initializable {
                         numberDef = numberDef + 1;
                         allGamesFiltered.add(game);
                     }
-                    
+
                 }
                 setPieChartWinLoose(numberWin, numberDef, numberWin + " Win / " + numberDef + " Loose");
             }
@@ -411,7 +434,7 @@ public class HomeController implements Initializable {
                                 numberDef = numberDef + 1;
                                 allGamesFiltered.add(game);
                             }
-                            
+
                         }
                         setPieChartWinLoose(numberWin, numberDef, numberWin + " Win / " + numberDef + " Loose");
                     } else {
@@ -426,7 +449,7 @@ public class HomeController implements Initializable {
                                 numberDef = numberDef + 1;
                                 allGamesFiltered.add(game);
                             }
-                            
+
                         }
                         setPieChartWinLoose(numberWin, numberDef, numberWin + " Win / " + numberDef + " Loose");
                     }
@@ -441,7 +464,7 @@ public class HomeController implements Initializable {
                             numberDef = numberDef + 1;
                             allGamesFiltered.add(game);
                         }
-                        
+
                     }
                     setPieChartWinLoose(numberWin, numberDef, numberWin + " Win / " + numberDef + " Loose");
                 }
@@ -456,12 +479,13 @@ public class HomeController implements Initializable {
                         numberDef = numberDef + 1;
                         allGamesFiltered.add(game);
                     }
-                    
+
                 }
                 setPieChartWinLoose(numberWin, numberDef, numberWin + " Win / " + numberDef + " Loose");
             }
         }
         addGamesToTableView();
+        filterSelectedItem();
     }
 
     private void addGamesToTableView() {
@@ -469,9 +493,72 @@ public class HomeController implements Initializable {
         gameData.addAll(allGamesFiltered);
         tableView.getItems().clear();
         tableView.setItems(gameData);
-        
-        allGamesFiltered.stream().forEach((game) -> {
-            System.out.println(game.getKda());
-        });
+    }
+
+    private void filterSelectedItem() {
+        ObservableList<Game> gameSelected;
+        double gameSelectedKda = 0;
+        double gameSelectedKill = 0;
+        double gameSelectedDeath = 0;
+        double gameSelectedAssist = 0;
+        int gameSelectedVictory = 0;
+        int gameSelectedDefeat = 0;
+
+        if (tableView.getSelectionModel().getSelectedItems().size() == 0) {
+            gameSelected = FXCollections.observableArrayList(allGamesFiltered);
+        } else {
+            gameSelected = tableView.getSelectionModel().getSelectedItems();
+
+        }
+
+        for (Game game : gameSelected) {
+            gameSelectedKill = gameSelectedKill + game.getKill();
+            gameSelectedDeath = gameSelectedDeath + game.getDeath();
+            gameSelectedAssist = gameSelectedAssist + game.getAssist();
+
+            if (game.getResult() == Result.Victory) {
+                gameSelectedVictory = gameSelectedVictory + 1;
+            } else {
+                gameSelectedDefeat = gameSelectedDefeat + 1;
+            }
+        }
+
+        if (gameSelectedDeath != 0) {
+            gameSelectedKda = (gameSelectedKill + gameSelectedAssist) / gameSelectedDeath;
+            averageKdaSelected.setText(String.valueOf(gameSelectedKda));
+        } else {
+            averageKdaSelected.setText("Infinite");
+        }
+
+        // Set PIECHART Data
+        ObservableList<PieChart.Data> pieChartData
+                = FXCollections.observableArrayList(
+                        new PieChart.Data("Victory", gameSelectedVictory),
+                        new PieChart.Data("Defeat", gameSelectedDefeat));
+        pieChartSelected.setTitle(gameSelectedVictory + " Win(s) / " + gameSelectedDefeat + " Loose(s)");
+        pieChartSelected.setData(pieChartData);
+        pieChartSelected.setLabelLineLength(2);
+        pieChartSelected.setLegendSide(Side.LEFT);
+
+        applyCustomColorSequence(
+                pieChartData,
+                "green",
+                "red"
+        );
+
+        // Set BARCHART Data
+        barChartSelected.setTitle("K.D.A");
+
+        barChartSelected.getData().clear();
+
+        XYChart.Series series1 = new XYChart.Series();
+        XYChart.Series series2 = new XYChart.Series();
+        XYChart.Series series3 = new XYChart.Series();
+
+        series1.getData().add(new XYChart.Data("Kill", gameSelectedKill));
+        series2.getData().add(new XYChart.Data("Death", gameSelectedDeath));
+        series3.getData().add(new XYChart.Data("Assist", gameSelectedAssist));
+
+        barChartSelected.getData().addAll(series1, series2, series3);
     }
 }

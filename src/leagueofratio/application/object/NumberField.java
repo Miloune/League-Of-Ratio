@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package leagueofratio.application;
+package leagueofratio.application.object;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
